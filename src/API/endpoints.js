@@ -8,12 +8,14 @@ const face = data => {
     });
   };
 
-  const faceget = () => {
-    console.log("AAA")
-    return axios.get('/faceget');
-  };
-  
+const reset = () => {
+  return axios.delete('/reset');
+}
+
+const solve = () => {
+  return axios.get('/solve');
+}
   export default {
     face,
-    faceget
+    reset
   };

@@ -16,7 +16,31 @@ export default function App() {
     })();
   }, []);
 
-  const onSubmitPressed = async () => {
+  const onResetPressed = async () => {
+    facesTaken = 0;
+    try {
+      let response = await endpoints.reset();
+      console.log('Response from API:', response.data);
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
+  }
+
+  const onSolvePressed = async () => {
+    if (facesTaken != 6){
+      console.warn(`You need to take a photo for each face of the cube. Current count = ${facesTaken}`)
+    }
+    else {
+      try {
+        let response = await endpoints.solve();
+        console.log('Response from API:', response.data);
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+      }
+    }
+  }
+
+  const onTakePicturePressed = async () => {
     if (cameraRef.current) {
       let photo = await cameraRef.current.takePictureAsync();
       facesTaken++;
@@ -60,11 +84,19 @@ export default function App() {
           <View>
             <View style={styles.square} />
           </View>
+          <Pressable onPress={onTakePicturePressed} style={styles.cameraButton}>
+            <View style={styles.innerCircle} />
+          </Pressable>
         </Camera>
       </View>
-      <Pressable onPress={onSubmitPressed} style={styles.buttonContainer}>
-        <Text style={styles.text}>Submit</Text>
-      </Pressable>
+      <View style={styles.bottomContainer}>
+        <Pressable onPress={onResetPressed} style={styles.buttonContainer}>
+          <Text style={styles.text}>Reset</Text>
+        </Pressable>
+        <Pressable onPress={onSolvePressed} style={styles.buttonContainer}>
+          <Text style={styles.text}>Solve</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -76,6 +108,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  bottomContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: "space-evenly",
+    gap: 20,
+  },
   buttonContainer: {
     backgroundColor: "#315A72",
     paddingVertical: 20,
@@ -84,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 50,
     borderColor: "#D2D2D2",
-    width: '80%'
+    width: '40%'
   },
   buttonContent: {
     flexDirection: "row", 
@@ -112,5 +150,24 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
     backgroundColor: 'transparent',
+  },
+  cameraButton: {
+    position: 'absolute', 
+    bottom: 50, 
+    alignSelf: 'center', 
+    width: 85, 
+    height: 85, 
+    borderRadius: 55, 
+    backgroundColor: 'white', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+  },
+  innerCircle: {
+    width: 75, 
+    height: 75, 
+    borderRadius: 55, 
+    backgroundColor: '#fff', 
+    borderWidth: 2, 
+    borderColor: '#000',
   },
 });
